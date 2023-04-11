@@ -21,32 +21,28 @@ class MyHomePage extends StatefulWidget {
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
-
 }
 
 class _MyHomePageState extends State<MyHomePage> {
   final TextEditingController _textController = TextEditingController();
-  List<String> _textList = [];
-  List<bool> _checkList = [];
+  Map<String, bool> _textMap = {};
 
   void _addText(String text) {
     setState(() {
-      _textList.add(text);
-      _checkList.add(false);
+      _textMap[text] = false;
     });
     _textController.clear();
   }
 
-  void _removeText(int index) {
+  void _removeText(String text) {
     setState(() {
-      _textList.removeAt(index);
-      _checkList.removeAt(index);
+      _textMap.remove(text);
     });
   }
 
-  void _toggleCheck(int index) {
+  void _toggleCheck(String text) {
     setState(() {
-      _checkList[index] = !_checkList[index];
+      _textMap[text] = !_textMap[text]!;
     });
   }
 
@@ -95,29 +91,33 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           Expanded(
             child: ListView.builder(
-              itemCount: _textList.length,
+              itemCount: _textMap.length,
               itemBuilder: (context, index) {
+                final String text = _textMap.keys.elementAt(index);
+                final bool isChecked = _textMap.values.elementAt(index);
                 return ListTile(
                   title: Text(
-                    _textList[index],
+                    text,
                     style: TextStyle(
-                      color: _checkList[index] ? Colors.green : Colors.white,
+                      color: isChecked ? Colors.green : Colors.white,
                     ),
                   ),
-                  tileColor: _checkList[index] ? Colors.transparent : Color.fromARGB(255, 216, 122, 122), // Check yapılmadıysa kırmızı arkaplan
+                  tileColor: isChecked
+                      ? Colors.transparent
+                      : Color.fromARGB(255, 216, 122, 122),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       IconButton(
                         icon: Icon(Icons.delete),
                         onPressed: () {
-                          _removeText(index);
+                          _removeText(text);
                         },
                       ),
                       Checkbox(
-                        value: _checkList[index],
+                        value: isChecked,
                         onChanged: (value) {
-                          _toggleCheck(index);
+                          _toggleCheck(text);
                         },
                       ),
                     ],
